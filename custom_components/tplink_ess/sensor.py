@@ -1,17 +1,18 @@
-"""Sensor platform for integration_blueprint."""
+"""Sensor platform for tplink_ess."""
 from homeassistant.components.sensor import SensorEntity
 
 from .const import DEFAULT_NAME, DOMAIN, ICON, SENSOR
-from .entity import IntegrationBlueprintEntity
+from .entity import TPLinkESSEntity
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices([IntegrationBlueprintSensor(coordinator, entry)])
+    # Loop thru coordinator data keys
+    async_add_devices([TPLinkESSSensor(coordinator, entry)])
 
 
-class IntegrationBlueprintSensor(IntegrationBlueprintEntity, SensorEntity):
+class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
     """integration_blueprint Sensor class."""
 
     @property

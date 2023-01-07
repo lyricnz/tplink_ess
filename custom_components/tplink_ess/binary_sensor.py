@@ -7,16 +7,17 @@ from .const import (
     DEFAULT_NAME,
     DOMAIN,
 )
-from .entity import IntegrationBlueprintEntity
+from .entity import TPLinkESSEntity
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup binary_sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices([IntegrationBlueprintBinarySensor(coordinator, entry)])
+    # Loop thru coordinator data stats key
+    async_add_devices([TPLinkESSBinarySensor(coordinator, entry)])
 
 
-class IntegrationBlueprintBinarySensor(IntegrationBlueprintEntity, BinarySensorEntity):
+class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
     """integration_blueprint binary_sensor class."""
 
     @property
@@ -32,4 +33,5 @@ class IntegrationBlueprintBinarySensor(IntegrationBlueprintEntity, BinarySensorE
     @property
     def is_on(self):
         """Return true if the binary_sensor is on."""
+        # index 3 for port status
         return self.coordinator.data.get("title", "") == "foo"

@@ -1,10 +1,10 @@
 """BlueprintEntity class"""
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, NAME, VERSION, ATTRIBUTION
+from .const import DOMAIN, MANUFACTURER
 
 
-class IntegrationBlueprintEntity(CoordinatorEntity):
+class TPLinkESSEntity(CoordinatorEntity):
     def __init__(self, coordinator, config_entry):
         super().__init__(coordinator)
         self.config_entry = config_entry
@@ -18,16 +18,15 @@ class IntegrationBlueprintEntity(CoordinatorEntity):
     def device_info(self):
         return {
             "identifiers": {(DOMAIN, self.unique_id)},
-            "name": NAME,
-            "model": VERSION,
-            "manufacturer": NAME,
+            "name": str(self.coordinator.data.get("hostname")),
+            "model": str(self.coordinator.data.get("hardware")),
+            "manufacturer": MANUFACTURER,
         }
 
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
         return {
-            "attribution": ATTRIBUTION,
-            "id": str(self.coordinator.data.get("id")),
+            "id": str(self.coordinator.data.get("mac")),
             "integration": DOMAIN,
         }

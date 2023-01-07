@@ -1,24 +1,24 @@
 """
-Custom integration to integrate integration_blueprint with Home Assistant.
+Custom integration to integrate TPLink Easy Smart Switches with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/custom-components/integration_blueprint
+https://github.com/lyricnz/tplink_ess
 """
 import asyncio
 from datetime import timedelta
 import logging
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_MAC, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import IntegrationBlueprintApiClient
+from .api import TPLinkESSClient
 
 from .const import (
-    CONF_PASSWORD,
-    CONF_USERNAME,
+    CONF_INTERFACE,
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
@@ -42,11 +42,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
+    mac_addr = entry.data.get(CONF_MAC)
+    interface = entry.data.get(CONF_INTERFACE)
 
-    session = async_get_clientsession(hass)
-    client = IntegrationBlueprintApiClient(username, password, session)
+    client = TPLinkESSClient(username, password, mac_addr, interface)
 
-    coordinator = BlueprintDataUpdateCoordinator(hass, client=client)
+    coordinator = TPLinkESSDataUpdateCoordinator(hass, client=client)
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -65,11 +66,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
+class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
     def __init__(
-        self, hass: HomeAssistant, client: IntegrationBlueprintApiClient
+        self, hass: HomeAssistant, client: TPLinkESSClient
     ) -> None:
         """Initialize."""
         self.api = client
