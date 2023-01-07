@@ -5,6 +5,7 @@ from .const import DOMAIN, MANUFACTURER
 
 
 class TPLinkESSEntity(CoordinatorEntity):
+    """Representation of a TPLink Easy Smart Switch."""
     def __init__(self, coordinator, config_entry):
         super().__init__(coordinator)
         self.config_entry = config_entry
@@ -16,6 +17,7 @@ class TPLinkESSEntity(CoordinatorEntity):
 
     @property
     def device_info(self):
+        """Return the device info."""
         return {
             "identifiers": {(DOMAIN, self.unique_id)},
             "name": str(self.coordinator.data.get("hostname")),
