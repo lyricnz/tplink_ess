@@ -13,8 +13,13 @@ HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 class TPLinkESSClient:
     """Representation of a TPLink ESS network switch."""
+
     def __init__(
-        self, username: str = "", password: str = "", mac_addr: str = "", interface: str = ""
+        self,
+        username: str = "",
+        password: str = "",
+        mac_addr: str = "",
+        interface: str = "",
     ) -> None:
         """Sample API Client."""
         self._username = username
@@ -24,7 +29,9 @@ class TPLinkESSClient:
 
     async def async_get_data(self) -> dict:
         """Get data from the API."""
-        api = tplink_ess_lib(self._mac_addr, self._interface, self._username, self._password)
+        api = tplink_ess_lib(
+            self._mac_addr, self._interface, self._username, self._password
+        )
         return await api.update_data()
 
     async def async_get_interfaces(self) -> dict:

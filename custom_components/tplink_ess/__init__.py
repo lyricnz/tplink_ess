@@ -69,9 +69,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
-    def __init__(
-        self, hass: HomeAssistant, client: TPLinkESSClient
-    ) -> None:
+    def __init__(self, hass: HomeAssistant, client: TPLinkESSClient) -> None:
         """Initialize."""
         self.api = client
         self.platforms = []
