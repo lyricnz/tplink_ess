@@ -22,7 +22,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._errors = {}
         self._data = {}
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input=None): # pylint: disable=unused-argument
         """Handle a flow initialized by the user."""
         self._errors = {}
 
