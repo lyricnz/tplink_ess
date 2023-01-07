@@ -137,7 +137,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry):
         """Handle options flow."""
-        return BlueprintOptionsFlowHandler(config_entry)
+        return TPLinkESSOptionsFlowHandler(config_entry)
 
     async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
         """Show the configuration form to edit location data."""
