@@ -1,9 +1,7 @@
 """Sample API Client."""
 
 import logging
-import tplink_ess_lib
-
-from tplink_ess_lib import MissingInterface
+from tplink_ess_lib import MissingInterface, tplink_ess
 
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -29,19 +27,19 @@ class TPLinkESSClient:
 
     async def async_get_data(self) -> dict:
         """Get data from the API."""
-        api = tplink_ess_lib(
+        api = tplink_ess(
             self._mac_addr, self._interface, self._username, self._password
         )
         return await api.update_data()
 
     async def async_get_interfaces(self) -> dict:
         """Get interface list from library."""
-        api = tplink_ess_lib()
+        api = tplink_ess()
         return await api.interfaces()
 
     async def async_discover_swithces(self) -> dict:
         """Discover switches and return results."""
         if not self._interface:
             raise MissingInterface
-        api = tplink_ess_lib(interface=self._interface)
+        api = tplink_ess(interface=self._interface)
         return await api.discovery()
