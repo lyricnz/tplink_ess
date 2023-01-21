@@ -7,6 +7,7 @@ from .const import DOMAIN, MANUFACTURER
 
 class TPLinkESSEntity(CoordinatorEntity):
     """Representation of a TPLink Easy Smart Switch."""
+
     def __init__(self, coordinator, config_entry):
         super().__init__(coordinator)
         self.config_entry = config_entry

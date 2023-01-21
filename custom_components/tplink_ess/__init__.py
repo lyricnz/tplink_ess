@@ -16,20 +16,16 @@ import homeassistant.helpers.device_registry as dr
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import TPLinkESSClient
-
-from .const import (
-    MANUFACTURER,
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
+from .const import DOMAIN, MANUFACTURER, PLATFORMS, STARTUP_MESSAGE
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-async def async_setup(hass: HomeAssistant, config: Config): # pylint: disable=unused-argument
+async def async_setup(
+    hass: HomeAssistant, config: Config
+):  # pylint: disable=unused-argument
     """Set up this integration using YAML is not supported."""
     return True
 
@@ -46,7 +42,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     client = TPLinkESSClient(username, password, switch_mac)
 
-    coordinator = TPLinkESSDataUpdateCoordinator(hass, client=client, switch_mac=switch_mac)
+    coordinator = TPLinkESSDataUpdateCoordinator(
+        hass, client=client, switch_mac=switch_mac
+    )
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -68,7 +66,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
-    def __init__(self, hass: HomeAssistant, client: TPLinkESSClient, switch_mac: str) -> None:
+    def __init__(
+        self, hass: HomeAssistant, client: TPLinkESSClient, switch_mac: str
+    ) -> None:
         """Initialize."""
         self.api = client
         self._switch_mac = switch_mac

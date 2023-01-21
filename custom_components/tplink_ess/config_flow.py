@@ -5,10 +5,7 @@ from homeassistant.core import callback
 import voluptuous as vol
 
 from .api import TPLinkESSClient
-from .const import (
-    DOMAIN,
-    PLATFORMS,
-)
+from .const import DOMAIN, PLATFORMS
 
 
 class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -21,7 +18,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._errors = {}
         self._data = {}
 
-    async def async_step_user(self, user_input=None): # pylint: disable=unused-argument
+    async def async_step_user(self, user_input=None):  # pylint: disable=unused-argument
         """Handle a flow initialized by the user."""
         self._errors = {}
 
@@ -48,9 +45,9 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="discover",
             data_schema=vol.Schema(
                 {
-                    vol.Required(
-                        CONF_MAC, default=user_input[CONF_MAC]
-                    ): vol.In(discovered),
+                    vol.Required(CONF_MAC, default=user_input[CONF_MAC]): vol.In(
+                        discovered
+                    ),
                 }
             ),
             errors=self._errors,

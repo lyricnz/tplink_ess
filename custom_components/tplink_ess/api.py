@@ -1,10 +1,11 @@
 """Sample API Client."""
 
 import logging
+
 from tplink_ess_lib import tplink_ess
 
-
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
 
 class TPLinkESSClient:
     """Representation of a TPLink ESS network switch."""
@@ -23,9 +24,7 @@ class TPLinkESSClient:
 
     async def async_get_data(self) -> dict:
         """Get data from the API."""
-        api = tplink_ess(
-            self._host_mac, self._username, self._password
-        )
+        api = tplink_ess(self._host_mac, self._username, self._password)
         return await api.update_data(switch_mac=self._switch_mac)
 
     async def async_discover_swithces(self) -> list:
