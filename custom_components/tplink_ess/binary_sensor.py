@@ -13,7 +13,7 @@ from .entity import TPLinkESSEntity
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup binary_sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    # Loop thru coordinator data stats key
+    # Loop thru coordinator data stats key Link Status value
     async_add_devices([TPLinkESSBinarySensor(coordinator, entry)])
 
 

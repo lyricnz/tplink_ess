@@ -12,12 +12,13 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_MAC, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
+import homeassistant.helpers.device_registry as dr
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import TPLinkESSClient
 
 from .const import (
-    CONF_INTERFACE,
+    MANUFACTURER,
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
@@ -41,12 +42,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
-    mac_addr = entry.data.get(CONF_MAC)
-    interface = entry.data.get(CONF_INTERFACE)
+    switch_mac = entry.data.get(CONF_MAC)
 
-    client = TPLinkESSClient(username, password, mac_addr, interface)
+    client = TPLinkESSClient(username, password, switch_mac)
 
-    coordinator = TPLinkESSDataUpdateCoordinator(hass, client=client)
+    coordinator = TPLinkESSDataUpdateCoordinator(hass, client=client, switch_mac=switch_mac)
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -68,9 +68,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
-    def __init__(self, hass: HomeAssistant, client: TPLinkESSClient) -> None:
+    def __init__(self, hass: HomeAssistant, client: TPLinkESSClient, switch_mac: str) -> None:
         """Initialize."""
         self.api = client
+        self._switch_mac = switch_mac
         self.platforms = []
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
@@ -78,7 +79,7 @@ class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            return await self.api.async_get_data()
+            return await self.api.async_get_data(self._switch_mac)
         except Exception as exception:
             raise UpdateFailed() from exception
 

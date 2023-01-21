@@ -19,10 +19,6 @@ SENSOR = "sensor"
 SWITCH = "switch"
 PLATFORMS = [BINARY_SENSOR, SENSOR]
 
-
-# Configuration and options
-CONF_INTERFACE = "interface"
-
 # Defaults
 DEFAULT_NAME = DOMAIN
 

@@ -6,7 +6,6 @@ import voluptuous as vol
 
 from .api import TPLinkESSClient
 from .const import (
-    CONF_INTERFACE,
     DOMAIN,
     PLATFORMS,
 )
@@ -32,51 +31,26 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle switch discovery."""
         if user_input is not None:
             self._data.update(user_input)
-            return await self.async_step_mac()
+            return await self.async_step_creds()
         else:
             return await self._show_config_discovery(user_input)
 
     async def _show_config_discovery(self, user_input):
         """Show the configuration form."""
         api = TPLinkESSClient()
-        interfaces = await api.async_get_interfaces()
+        switches = await api.async_discover_swithces()
+
+        discovered = {}
+        for switch in switches:
+            discovered[switch.ip_addr] = switch.mac
 
         return self.async_show_form(
             step_id="discover",
             data_schema=vol.Schema(
                 {
                     vol.Required(
-                        CONF_INTERFACE, default=user_input[CONF_INTERFACE]
-                    ): vol.In(interfaces),
-                }
-            ),
-            errors=self._errors,
-        )
-
-    async def async_step_mac(self, user_input=None):
-        """Handle MAC address selection."""
-        if user_input is not None:
-            self._data.update(user_input)
-            return await self.async_step_creds()
-        else:
-            return await self._show_config_mac(user_input)
-
-    async def _show_config_mac(self, user_input):
-        """Show the configuration form."""
-        api = TPLinkESSClient(interface=self._data[CONF_INTERFACE])
-        switches = await api.async_discover_swithces()
-        sw_list = []
-
-        for switch in switches:
-            sw_list.append(switch[CONF_MAC])
-
-        return self.async_show_form(
-            step_id="discover",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_MAC, default=user_input[CONF_MAC]): vol.In(
-                        sw_list
-                    ),
+                        CONF_MAC, default=user_input[CONF_MAC]
+                    ): vol.In(discovered),
                 }
             ),
             errors=self._errors,
@@ -92,16 +66,11 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _show_config_manual(self, user_input):
         """Show the config form."""
-        api = TPLinkESSClient()
-        interfaces = api.async_get_interfaces()
 
         return self.async_show_form(
             step_id="discover",
             data_schema=vol.Schema(
                 {
-                    vol.Required(
-                        CONF_INTERFACE, default=user_input[CONF_INTERFACE]
-                    ): vol.In(interfaces),
                     vol.Required(CONF_MAC, default=user_input[CONF_MAC]): str,
                 }
             ),
@@ -115,11 +84,10 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_USERNAME],
                 user_input[CONF_PASSWORD],
                 user_input[CONF_MAC],
-                user_input[CONF_INTERFACE],
             )
             if valid:
                 return self.async_create_entry(
-                    title=user_input[CONF_USERNAME], data=user_input
+                    title=user_input[CONF_MAC], data=user_input
                 )
             else:
                 self._errors["base"] = "auth"
@@ -152,10 +120,10 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password, mac_addr, interface):
+    async def _test_credentials(self, username, password, mac_addr):
         """Return true if credentials is valid."""
         try:
-            client = TPLinkESSClient(username, password, mac_addr, interface)
+            client = TPLinkESSClient(username, password, mac_addr)
             await client.async_get_data()
             return True
         except Exception:  # pylint: disable=broad-except

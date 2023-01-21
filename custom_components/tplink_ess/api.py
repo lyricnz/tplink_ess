@@ -1,13 +1,10 @@
 """Sample API Client."""
 
 import logging
-from tplink_ess_lib import MissingInterface, tplink_ess
+from tplink_ess_lib import tplink_ess
 
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
-HEADERS = {"Content-type": "application/json; charset=UTF-8"}
-
 
 class TPLinkESSClient:
     """Representation of a TPLink ESS network switch."""
@@ -16,30 +13,22 @@ class TPLinkESSClient:
         self,
         username: str = "",
         password: str = "",
-        mac_addr: str = "",
-        interface: str = "",
+        switch_mac: str = "",
     ) -> None:
-        """Sample API Client."""
+        """Library client."""
         self._username = username
         self._password = password
-        self._mac_addr = mac_addr
-        self._interface = interface
+        self._switch_mac = switch_mac
+        self._host_mac = "de:ad:be:ef:fe:ed"
 
     async def async_get_data(self) -> dict:
         """Get data from the API."""
         api = tplink_ess(
-            self._mac_addr, self._interface, self._username, self._password
+            self._host_mac, self._username, self._password
         )
-        return await api.update_data()
+        return await api.update_data(switch_mac=self._switch_mac)
 
-    async def async_get_interfaces(self) -> dict:
-        """Get interface list from library."""
-        api = tplink_ess()
-        return await api.interfaces()
-
-    async def async_discover_swithces(self) -> dict:
+    async def async_discover_swithces(self) -> list:
         """Discover switches and return results."""
-        if not self._interface:
-            raise MissingInterface
-        api = tplink_ess(interface=self._interface)
+        api = tplink_ess()
         return await api.discovery()
