@@ -2,8 +2,26 @@
     "config": {
         "step": {
             "user": {
-                "title": "Blueprint",
-                "description": "If you need help with the configuration have a look here: https://github.com/custom-components/integration_blueprint",
+                "description": "Select manual entry or automatic disocvery.",
+                "menu_options": {
+                    "manual": "Manually enter MAC address",
+                    "discover": "Discover switches on network"
+                }
+            },
+            "discover": {
+                "description": "Select your switch from the list below.",
+                "data": {
+                    "mac": "Switch IP: "
+                }
+            },
+            "manual": {
+                "description": "Enter your switch MAC address below.",
+                "data": {
+                    "mac": "Switch MAC address: "
+                }
+            },
+            "creds": {
+                "description": "Enter the username and password to login to your switch.",
                 "data": {
                     "username": "Username",
                     "password": "Password"
@@ -11,10 +29,7 @@
             }
         },
         "error": {
-            "auth": "Username/Password is wrong."
-        },
-        "abort": {
-            "single_instance_allowed": "Only a single instance is allowed."
+            "auth": "Problems logging into the switch."
         }
     },
     "options": {
