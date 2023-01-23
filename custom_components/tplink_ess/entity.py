@@ -23,10 +23,10 @@ class TPLinkESSEntity(CoordinatorEntity):
         return {
             "identifiers": {(DOMAIN, self.unique_id)},
             "name": str(self.coordinator.data.get(CONF_MAC)),
-            "model": str(self.coordinator.data.get("type")),
+            "model": str(self.coordinator.data.get("hostname")["type"]),
             "manufacturer": MANUFACTURER,
-            "sw_version": str(self.coordinator.data.get("firmware")),
-            "configuration_url": f"http://{self.coordinator.data.get('ip_addr')}",
+            "sw_version": str(self.coordinator.data.get("hostname")["firmware"]),
+            "configuration_url": f"http://{self.coordinator.data.get('hostname')['ip_addr']}",
         }
 
     @property
