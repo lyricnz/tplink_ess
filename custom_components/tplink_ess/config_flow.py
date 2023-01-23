@@ -50,7 +50,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         else:
             discovered = {}
             for switch in switches:
-                discovered[switch["mac"]] = switch["ip_addr"]
+                discovered[switch["mac"]] = f"{switch['ip_addr']} ({switch['hostname']} - {switch['hardware']})"
 
         _LOGGER.debug("Discovered processed: %s", discovered)
 
@@ -115,9 +115,10 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             valid = await self._test_credentials(
                 user_input[CONF_USERNAME],
                 user_input[CONF_PASSWORD],
-                user_input[CONF_MAC],
+                self._data[CONF_MAC],
             )
             if valid:
+                self._data.update(user_input)
                 return self.async_create_entry(
                     title=user_input[CONF_MAC], data=user_input
                 )
