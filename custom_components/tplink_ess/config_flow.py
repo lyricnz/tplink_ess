@@ -4,6 +4,7 @@ import logging
 from homeassistant import config_entries
 from homeassistant.const import CONF_MAC, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
+from homeassistant.helpers.device_registry import format_mac
 import voluptuous as vol
 
 from .api import TPLinkESSClient
@@ -21,6 +22,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Initialize."""
         self._errors = {}
         self._data = {}
+        self._switches = {}
 
     async def async_step_user(self, user_input=None):  # pylint: disable=unused-argument
         """Handle a flow initialized by the user."""
@@ -31,6 +33,13 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_discover(self, user_input=None):
         """Handle switch discovery."""
         if user_input is not None:
+            unique_id = format_mac(user_input[CONF_MAC])
+            await self.async_set_unique_id(unique_id)
+            self._abort_if_unique_id_configured(
+                updates={
+                    CONF_MAC: user_input[CONF_MAC]
+                },
+            )            
             self._data.update(user_input)
             return await self.async_step_creds()
         return await self._show_config_discovery(user_input)
@@ -52,6 +61,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 discovered[
                     switch["mac"]
                 ] = f"{switch['ip_addr']} ({switch['hostname']} - {switch['hardware']})"
+                self._switches[switch["mac"]] = switch['hostname']
 
         _LOGGER.debug("Discovered processed: %s", discovered)
 
@@ -81,6 +91,13 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_manual(self, user_input=None):
         """Handle manual user input for switch."""
         if user_input is not None:
+            unique_id = format_mac(user_input[CONF_MAC])
+            await self.async_set_unique_id(unique_id)
+            self._abort_if_unique_id_configured(
+                updates={
+                    CONF_MAC: user_input[CONF_MAC]
+                },
+            )
             self._data.update(user_input)
             return await self.async_step_creds()
         return await self._show_config_manual(user_input)
@@ -119,7 +136,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             if valid:
                 self._data.update(user_input)
                 return self.async_create_entry(
-                    title=self._data[CONF_MAC], data=self._data
+                    title=self._switches[self._data[CONF_MAC]], data=self._data
                 )
             self._errors["base"] = "auth"
             return await self._show_config_form(user_input)

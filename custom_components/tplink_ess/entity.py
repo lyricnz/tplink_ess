@@ -1,5 +1,4 @@
 """Entity class"""
-from homeassistant.const import CONF_MAC
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, MANUFACTURER
@@ -17,18 +16,10 @@ class TPLinkESSEntity(CoordinatorEntity):
         """Return the device info."""
         return {
             "identifiers": {(DOMAIN, self.unique_id)},
-            "name": str(self.coordinator.data.get(CONF_MAC)),
-            "model": str(self.coordinator.data.get("hostname")["type"]),
+            "name": str(self.coordinator.data.get("hostname")["hostname"]),
+            "model": str(self.coordinator.data.get("hostname")["hardware"]),
             "manufacturer": MANUFACTURER,
             "sw_version": str(self.coordinator.data.get("hostname")["firmware"]),
             "configuration_url": f"http://{self.coordinator.data.get('hostname')['ip_addr']}",
             "connections": {(DOMAIN, self.config_entry.entry_id)},
-        }
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            "id": str(self.coordinator.data.get(CONF_MAC)),
-            "integration": DOMAIN,
         }

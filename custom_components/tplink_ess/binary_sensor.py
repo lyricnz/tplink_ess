@@ -51,11 +51,12 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
         self._config = config
         self._port = None
         self._key = None
+        self._prefix = coordinator.data.get("hostname")["hostname"]
         if port is not None:
             self._data = coordinator.data.get("stats")["stats"][port]
             self._port = port
             self._name = self._data["Port"]
-            self._attr_name = f"Port {self._name}"
+            self._attr_name = f"{self._prefix} Port {self._name}"
             self._attr_unique_id = f"port{port}_{self._config.entry_id}"
         if key is not None:
             if key == "dhcp":
@@ -63,7 +64,7 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
             else:
                 self._data = coordinator.data.get(key)[key]
             self._key = key
-            self._attr_name = key
+            self._attr_name = f"{self._prefix} {key}"
             self._attr_unique_id = f"{key}_{self._config.entry_id}"
 
     @property
