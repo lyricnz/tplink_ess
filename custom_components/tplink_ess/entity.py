@@ -12,10 +12,6 @@ class TPLinkESSEntity(CoordinatorEntity):
         super().__init__(coordinator)
         self.config_entry = config_entry
 
-    @property
-    def unique_id(self):
-        """Return a unique ID to use for this entity."""
-        return self.config_entry.entry_id
 
     @property
     def device_info(self):
@@ -27,6 +23,7 @@ class TPLinkESSEntity(CoordinatorEntity):
             "manufacturer": MANUFACTURER,
             "sw_version": str(self.coordinator.data.get("hostname")["firmware"]),
             "configuration_url": f"http://{self.coordinator.data.get('hostname')['ip_addr']}",
+            "connections": {(DOMAIN, self.config_entry.entry_id)}
         }
 
     @property

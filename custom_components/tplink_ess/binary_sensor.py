@@ -1,24 +1,49 @@
 """Binary sensor platform for integration_blueprint."""
+import logging
+
 from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+)
 
 from .const import BINARY_SENSOR, BINARY_SENSOR_DEVICE_CLASS, DEFAULT_NAME, DOMAIN
 from .entity import TPLinkESSEntity
+
+_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup binary_sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    # Loop thru coordinator data stats key Link Status value
-    async_add_devices([TPLinkESSBinarySensor(coordinator, entry)])
+
+    binary_sensors = []
+    limit = coordinator.data.get("num_ports")["num_ports"]
+    
+    i = 0
+    while i < limit:
+        binary_sensors.append(
+            TPLinkESSBinarySensor(i, coordinator, entry)
+        )
+        i = i + 1
+    async_add_devices(binary_sensors, False)
 
 
 class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
-    """integration_blueprint binary_sensor class."""
+    """TPLink ESS binary_sensor class."""
 
-    @property
-    def name(self):
-        """Return the name of the binary_sensor."""
-        return f"{DEFAULT_NAME}_{BINARY_SENSOR}"
+    def __init__(self, port: int, coordinator: DataUpdateCoordinator, config: ConfigEntry) -> None:
+        """Initialize."""
+        super().__init__(coordinator, config)
+        self.coordinator = coordinator
+        self._config = config
+        self._port = port
+        self._data = coordinator.data.get("stats")["stats"][port]
+        self._name = self._data["Port"]
+
+        self._attr_name = f"Port {self._name}"
+        self._attr_unique_id = f"port{port}_{self._config.entry_id}"
 
     @property
     def device_class(self):
@@ -28,5 +53,16 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
     @property
     def is_on(self):
         """Return true if the binary_sensor is on."""
-        # index 3 for port status
-        return self.coordinator.data.get("title", "") == "foo"
+        return self._data["Link Status Raw"]
+
+    @property
+    def available(self) -> bool:
+        """Return if entity is available."""
+        if "stats" in self.coordinator.data.get("stats"):
+            return True
+        return False
+
+    @property
+    def extra_state_attributes(self):
+        """Return the state attributes."""
+        return self._data
