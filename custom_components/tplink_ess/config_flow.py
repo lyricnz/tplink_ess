@@ -45,12 +45,14 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         if len(switches) == 0:
             _LOGGER.error("No switches discovered.")
-            discovered = { "": "None found" }
+            discovered = {"": "None found"}
 
         else:
             discovered = {}
             for switch in switches:
-                discovered[switch["mac"]] = f"{switch['ip_addr']} ({switch['hostname']} - {switch['hardware']})"
+                discovered[
+                    switch["mac"]
+                ] = f"{switch['ip_addr']} ({switch['hostname']} - {switch['hardware']})"
 
         _LOGGER.debug("Discovered processed: %s", discovered)
 
@@ -59,9 +61,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 step_id="discover",
                 data_schema=vol.Schema(
                     {
-                        vol.Required(CONF_MAC): vol.In(
-                            discovered
-                        ),
+                        vol.Required(CONF_MAC): vol.In(discovered),
                     }
                 ),
                 errors=self._errors,
@@ -150,7 +150,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     }
                 ),
                 errors=self._errors,
-            )            
+            )
         return self.async_show_form(
             step_id="creds",
             data_schema=vol.Schema(
