@@ -48,13 +48,12 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         self._config = config
         self._key = key
         self._prefix = coordinator.data.get("hostname")["hostname"]
-        if key == "vlan" and "vlan" in coordinator.data:
-            if "vlan" in coordinator.data.get("vlan"):
-                self._data = coordinator.data.get("vlan")["vlan"][item_id]
-                self._vlan_id = item_id
-                self._vlan_id_num = self._data["VLAN ID"]
-                self._attr_name = f"{self._prefix} VLAN: {self._data['VLAN Name']}"
-                self._attr_unique_id = f"vlan{self._vlan_id_num}_{self._config.entry_id}"
+        if key == "vlan" and coordinator.data.get("vlan")["vlan_enabled"] == "01":
+            self._data = coordinator.data.get("vlan")["vlan"][item_id]
+            self._vlan_id = item_id
+            self._vlan_id_num = self._data["VLAN ID"]
+            self._attr_name = f"{self._prefix} VLAN: {self._data['VLAN Name']}"
+            self._attr_unique_id = f"vlan{self._vlan_id_num}_{self._config.entry_id}"
         if key == "pvid":
             self._data = coordinator.data.get("pvid")["pvid"][item_id][1]
             self._pvid = item_id + 1
