@@ -100,7 +100,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 errors=self._errors,
             )
         return self.async_show_form(
-            step_id="discover",
+            step_id="manual",
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_MAC, default=user_input[CONF_MAC]): str,
@@ -141,7 +141,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Show the configuration form to edit location data."""
         if user_input is None:
             return self.async_show_form(
-                step_id="user",
+                step_id="creds",
                 data_schema=vol.Schema(
                     {
                         vol.Required(CONF_USERNAME): str,
@@ -151,7 +151,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 errors=self._errors,
             )            
         return self.async_show_form(
-            step_id="user",
+            step_id="creds",
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_USERNAME, default=user_input[CONF_USERNAME]): str,
