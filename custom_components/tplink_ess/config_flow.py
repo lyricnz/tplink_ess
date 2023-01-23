@@ -33,8 +33,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             self._data.update(user_input)
             return await self.async_step_creds()
-        else:
-            return await self._show_config_discovery(user_input)
+        return await self._show_config_discovery(user_input)
 
     async def _show_config_discovery(self, user_input):
         """Show the configuration form."""
