@@ -43,7 +43,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     client = TPLinkESSClient(username, password, switch_mac)
 
     coordinator = TPLinkESSDataUpdateCoordinator(
-        hass, client=client, switch_mac=switch_mac
+        hass, client=client
     )
     await coordinator.async_refresh()
 
@@ -67,11 +67,10 @@ class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
     def __init__(
-        self, hass: HomeAssistant, client: TPLinkESSClient, switch_mac: str
+        self, hass: HomeAssistant, client: TPLinkESSClient,
     ) -> None:
         """Initialize."""
         self.api = client
-        self._switch_mac = switch_mac
         self.platforms = []
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
@@ -79,8 +78,11 @@ class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            return await self.api.async_get_data(self._switch_mac)
+            value = await self.api.async_get_data()
+            _LOGGER.debug("TPLink switch data: %s", value)
+            return value
         except Exception as exception:
+            _LOGGER.debug("Error while refreshing switch data: %s", exception)
             raise UpdateFailed() from exception
 
 
