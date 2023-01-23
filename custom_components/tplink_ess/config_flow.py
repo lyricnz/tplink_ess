@@ -120,7 +120,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             if valid:
                 self._data.update(user_input)
                 return self.async_create_entry(
-                    title=user_input[CONF_MAC], data=user_input
+                    title=self._data[CONF_MAC], data=self._data
                 )
             self._errors["base"] = "auth"
             return await self._show_config_form(user_input)
