@@ -1,10 +1,13 @@
 """Binary sensor platform for integration_blueprint."""
 import logging
 
-from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntity
+from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
+    BinarySensorEntity,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import EntityCategory
-from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator)
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import BINARY_SENSOR_DEVICE_CLASS, DOMAIN
 from .entity import TPLinkESSEntity
@@ -18,26 +21,30 @@ async def async_setup_entry(hass, entry, async_add_devices):
 
     binary_sensors = []
     limit = coordinator.data.get("num_ports")["num_ports"]
-    
+
     i = 0
     while i < limit:
-        binary_sensors.append(
-            TPLinkESSBinarySensor(i, None, coordinator, entry)
-        )
+        binary_sensors.append(TPLinkESSBinarySensor(i, None, coordinator, entry))
         i = i + 1
 
     # one off binary sensors
     binary_sensors.append(TPLinkESSBinarySensor(None, "qos1", coordinator, entry))
     binary_sensors.append(TPLinkESSBinarySensor(None, "loop_prev", coordinator, entry))
     binary_sensors.append(TPLinkESSBinarySensor(None, "dhcp", coordinator, entry))
-    
+
     async_add_devices(binary_sensors, False)
 
 
 class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
     """TPLink ESS binary_sensor class."""
 
-    def __init__(self, port: int | None, key: str | None, coordinator: DataUpdateCoordinator, config: ConfigEntry) -> None:
+    def __init__(
+        self,
+        port: int | None,
+        key: str | None,
+        coordinator: DataUpdateCoordinator,
+        config: ConfigEntry,
+    ) -> None:
         """Initialize."""
         super().__init__(coordinator, config)
         self.coordinator = coordinator
@@ -71,7 +78,7 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
         """Return the category of this binary_sensor."""
         if self._key is not None:
             return EntityCategory.DIAGNOSTIC
-        return None  
+        return None
 
     @property
     def is_on(self):
@@ -90,7 +97,11 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
         """Return if entity is available."""
         if self._port is not None and "stats" in self.coordinator.data.get("stats"):
             return True
-        if self._key is not None and self._key in self.coordinator.data or self._key in self.coordinator.data.get("hostname"):
+        if (
+            self._key is not None
+            and self._key in self.coordinator.data
+            or self._key in self.coordinator.data.get("hostname")
+        ):
             return True
         return False
 

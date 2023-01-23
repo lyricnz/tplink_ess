@@ -42,9 +42,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     client = TPLinkESSClient(username, password, switch_mac)
 
-    coordinator = TPLinkESSDataUpdateCoordinator(
-        hass, client=client
-    )
+    coordinator = TPLinkESSDataUpdateCoordinator(hass, client=client)
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -67,7 +65,9 @@ class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
     def __init__(
-        self, hass: HomeAssistant, client: TPLinkESSClient,
+        self,
+        hass: HomeAssistant,
+        client: TPLinkESSClient,
     ) -> None:
         """Initialize."""
         self.api = client
