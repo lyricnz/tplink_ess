@@ -1,1 +1,1 @@
-tplink-ess-lib==0.4.0
+tplink-ess-lib==0.4.1
