@@ -1,4 +1,6 @@
 """Adds config flow for tplink_ess."""
+import logging
+
 from homeassistant import config_entries
 from homeassistant.const import CONF_MAC, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
@@ -6,6 +8,8 @@ import voluptuous as vol
 
 from .api import TPLinkESSClient
 from .const import DOMAIN, PLATFORMS
+
+_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -37,9 +41,31 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         api = TPLinkESSClient()
         switches = await api.async_discover_swithces()
 
-        discovered = {}
-        for switch in switches:
-            discovered[switch.ip_addr] = switch.mac
+        _LOGGER.debug("Discover results: %s", switches)
+
+        if len(switches) == 0:
+            _LOGGER.error("No switches discovered.")
+            discovered = { "": "None found" }
+
+        else:
+            discovered = {}
+            for switch in switches:
+                discovered[switch["mac"]] = switch["ip_addr"]
+
+        _LOGGER.debug("Discovered processed: %s", discovered)
+
+        if user_input is None:
+            return self.async_show_form(
+                step_id="discover",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_MAC): vol.In(
+                            discovered
+                        ),
+                    }
+                ),
+                errors=self._errors,
+            )
 
         return self.async_show_form(
             step_id="discover",
@@ -58,12 +84,21 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             self._data.update(user_input)
             return await self.async_step_creds()
-        else:
-            return await self._show_config_manual(user_input)
+        return await self._show_config_manual(user_input)
 
     async def _show_config_manual(self, user_input):
         """Show the config form."""
 
+        if user_input is None:
+            return self.async_show_form(
+                step_id="manual",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_MAC): str,
+                    }
+                ),
+                errors=self._errors,
+            )
         return self.async_show_form(
             step_id="discover",
             data_schema=vol.Schema(
@@ -104,6 +139,17 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
         """Show the configuration form to edit location data."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id="user",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required(CONF_USERNAME): str,
+                        vol.Required(CONF_PASSWORD): str,
+                    }
+                ),
+                errors=self._errors,
+            )            
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
