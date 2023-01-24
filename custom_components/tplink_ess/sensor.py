@@ -17,11 +17,12 @@ async def async_setup_entry(hass, entry, async_add_devices):
     coordinator = hass.data[DOMAIN][entry.entry_id]
     # Loop thru coordinator data keys
     sensors = []
-    vlans = coordinator.data.get("vlan")["vlan"]
-    i = 0
-    for vlan in vlans:
-        sensors.append(TPLinkESSSensor(i, "vlan", coordinator, entry))
-        i = i + 1
+    if coordinator.data.get("vlan")["vlan_enabled"] == "01":
+        vlans = coordinator.data.get("vlan")["vlan"]
+        i = 0
+        for vlan in vlans:
+            sensors.append(TPLinkESSSensor(i, "vlan", coordinator, entry))
+            i = i + 1
 
     pvids = coordinator.data.get("pvid")["pvid"]
     i = 0
@@ -48,7 +49,7 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         self._config = config
         self._key = key
         self._prefix = coordinator.data.get("hostname")["hostname"]
-        if key == "vlan" and coordinator.data.get("vlan")["vlan_enabled"] == "01":
+        if key == "vlan":
             self._data = coordinator.data.get("vlan")["vlan"][item_id]
             self._vlan_id = item_id
             self._vlan_id_num = self._data["VLAN ID"]
