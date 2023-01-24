@@ -7,6 +7,7 @@ https://github.com/lyricnz/tplink_ess
 import asyncio
 from datetime import timedelta
 import logging
+import random
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_MAC, CONF_PASSWORD, CONF_USERNAME
@@ -17,8 +18,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import TPLinkESSClient
 from .const import DOMAIN, MANUFACTURER, PLATFORMS, STARTUP_MESSAGE
-
-SCAN_INTERVAL = timedelta(seconds=30)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -40,9 +39,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     password = entry.data.get(CONF_PASSWORD)
     switch_mac = entry.data.get(CONF_MAC)
 
+    interval = timedelta(seconds=random.randint(10, 30))
+
     client = TPLinkESSClient(username, password, switch_mac)
 
-    coordinator = TPLinkESSDataUpdateCoordinator(hass, client=client)
+    coordinator = TPLinkESSDataUpdateCoordinator(hass, client=client, interval=interval)
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -68,12 +69,14 @@ class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
         self,
         hass: HomeAssistant,
         client: TPLinkESSClient,
+        interval: int,
     ) -> None:
         """Initialize."""
         self.api = client
+        self._interval = interval
         self.platforms = []
 
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
+        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=interval)
 
     async def _async_update_data(self):
         """Update data via library."""
