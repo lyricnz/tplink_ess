@@ -22,10 +22,9 @@ async def async_setup_entry(hass, entry, async_add_devices):
     binary_sensors = []
     limit = coordinator.data.get("num_ports")["num_ports"]
 
-    i = 0
-    while i < limit:
-        binary_sensors.append(TPLinkESSBinarySensor(i, None, coordinator, entry))
-        i = i + 1
+    binary_sensors.extend(
+        TPLinkESSBinarySensor(i, None, coordinator, entry) for i in range(limit)
+    )
 
     # one off binary sensors
     binary_sensors.append(TPLinkESSBinarySensor(None, "qos1", coordinator, entry))

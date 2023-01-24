@@ -19,16 +19,14 @@ async def async_setup_entry(hass, entry, async_add_devices):
     sensors = []
     if coordinator.data.get("vlan")["vlan_enabled"] == "01":
         vlans = coordinator.data.get("vlan")["vlan"]
-        i = 0
-        for vlan in vlans:
-            sensors.append(TPLinkESSSensor(i, "vlan", coordinator, entry))
-            i = i + 1
+        sensors.extend(
+            TPLinkESSSensor(i, "vlan", coordinator, entry) for i in range(len(vlans))
+        )
 
     pvids = coordinator.data.get("pvid")["pvid"]
-    i = 0
-    for pvid in pvids:
-        sensors.append(TPLinkESSSensor(i, "pvid", coordinator, entry))
-        i = i + 1
+    sensors.extend(
+        TPLinkESSSensor(i, "pvid", coordinator, entry) for i in range(len(pvids))
+    )
 
     async_add_devices(sensors, False)
 

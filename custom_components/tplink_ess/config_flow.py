@@ -36,10 +36,8 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             unique_id = format_mac(user_input[CONF_MAC])
             await self.async_set_unique_id(unique_id)
             self._abort_if_unique_id_configured(
-                updates={
-                    CONF_MAC: user_input[CONF_MAC]
-                },
-            )            
+                updates={CONF_MAC: user_input[CONF_MAC]},
+            )
             self._data.update(user_input)
             return await self.async_step_creds()
         return await self._show_config_discovery(user_input)
@@ -61,7 +59,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 discovered[
                     switch["mac"]
                 ] = f"{switch['ip_addr']} ({switch['hostname']} - {switch['hardware']})"
-                self._switches[switch["mac"]] = switch['hostname']
+                self._switches[switch["mac"]] = switch["hostname"]
 
         _LOGGER.debug("Discovered processed: %s", discovered)
 
@@ -94,9 +92,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             unique_id = format_mac(user_input[CONF_MAC])
             await self.async_set_unique_id(unique_id)
             self._abort_if_unique_id_configured(
-                updates={
-                    CONF_MAC: user_input[CONF_MAC]
-                },
+                updates={CONF_MAC: user_input[CONF_MAC]},
             )
             self._data.update(user_input)
             return await self.async_step_creds()
