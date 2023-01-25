@@ -8,7 +8,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, ICON, MANUFACTURER
+from .const import DOMAIN, ICON
 from .entity import TPLinkESSEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)

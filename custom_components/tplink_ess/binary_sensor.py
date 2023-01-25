@@ -10,7 +10,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import BINARY_SENSOR_DEVICE_CLASS, DOMAIN, MANUFACTURER
+from .const import DOMAIN
 from .entity import TPLinkESSEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)

@@ -1,9 +1,7 @@
 """Entity class"""
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers.entity import DeviceInfo, Entity
 
 from .const import DOMAIN, MANUFACTURER
-from . import TPLinkESSDataUpdateCoordinator
 
 
 class TPLinkESSEntity(CoordinatorEntity):

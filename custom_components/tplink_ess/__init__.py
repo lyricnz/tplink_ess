@@ -13,11 +13,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_MAC, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-import homeassistant.helpers.device_registry as dr
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import TPLinkESSClient
-from .const import DOMAIN, MANUFACTURER, PLATFORMS, STARTUP_MESSAGE
+from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
