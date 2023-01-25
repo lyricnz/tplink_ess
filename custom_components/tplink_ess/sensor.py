@@ -142,7 +142,5 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
     @property
     def entity_registry_enabled_default(self):
         """Return the default enablment of a sensor."""
-        # Disable packet sensors by default
-        if self._key in ("TxGoodPkt", "RxGoodPkt"):
-            return False
-        return True
+        # Disable sensors by default
+        return False
