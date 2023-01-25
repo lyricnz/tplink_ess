@@ -43,22 +43,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     client = TPLinkESSClient(username, password, switch_mac)
 
-    coordinator = TPLinkESSDataUpdateCoordinator(hass, client=client, interval=interval)
+    coordinator = TPLinkESSDataUpdateCoordinator(hass, client=client, name=switch_mac, interval=interval)
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
-
     for platform in PLATFORMS:
-        if entry.options.get(platform, True):
-            coordinator.platforms.append(platform)
-            hass.async_add_job(
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-            )
+        hass.async_create_task(
+            hass.config_entries.async_forward_entry_setup(entry, platform)
+        )
 
-    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
     return True
 
 
@@ -69,6 +65,7 @@ class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
         self,
         hass: HomeAssistant,
         client: TPLinkESSClient,
+        name: str,
         interval: int,
     ) -> None:
         """Initialize."""
@@ -76,18 +73,17 @@ class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
         self._interval = interval
         self.platforms = []
 
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=interval)
+        super().__init__(hass, _LOGGER, name=name, update_interval=interval)
 
     async def _async_update_data(self):
         """Update data via library."""
         try:
             value = await self.api.async_get_data()
             _LOGGER.debug("TPLink switch data: %s", value)
-            return value
         except Exception as exception:
             _LOGGER.debug("Error while refreshing switch data: %s", exception)
             raise UpdateFailed() from exception
-
+        return value
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""

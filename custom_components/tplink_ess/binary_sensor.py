@@ -8,14 +8,15 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import BINARY_SENSOR_DEVICE_CLASS, DOMAIN
+from .const import BINARY_SENSOR_DEVICE_CLASS, DOMAIN, MANUFACTURER
 from .entity import TPLinkESSEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback):
     """Setup binary_sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
@@ -31,7 +32,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
     binary_sensors.append(TPLinkESSBinarySensor(None, "loop_prev", coordinator, entry))
     binary_sensors.append(TPLinkESSBinarySensor(None, "dhcp", coordinator, entry))
 
-    async_add_devices(binary_sensors, False)
+    async_add_entities(binary_sensors, False)
 
 
 class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
@@ -48,23 +49,33 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
         super().__init__(coordinator, config)
         self.coordinator = coordinator
         self._config = config
-        self._port = None
-        self._key = None
+        self._port = port
+        self._key = key
         self._prefix = coordinator.data.get("hostname")["hostname"]
-        if port is not None:
-            self._data = coordinator.data.get("stats")["stats"][port]
-            self._port = port
-            self._name = self._data["Port"]
-            self._attr_name = f"{self._prefix} Port {self._name}"
-            self._attr_unique_id = f"port{port}_{self._config.entry_id}"
-        if key is not None:
-            if key == "dhcp":
-                self._data = coordinator.data.get("hostname")[key]
+
+    @property
+    def name(self) -> str:
+        """Return the name of the sensor."""
+        if self._port is not None:
+            data = self.coordinator.data.get("stats")["stats"][self._port]
+            return f"{self._prefix} Port {data['Port']}"
+        if self._key is not None:
+            if self._key == "dhcp":
+                data = self.coordinator.data.get("hostname")[self._key]
             else:
-                self._data = coordinator.data.get(key)[key]
-            self._key = key
-            self._attr_name = f"{self._prefix} {key}"
-            self._attr_unique_id = f"{key}_{self._config.entry_id}"
+                data = self.coordinator.data.get(self._key)[self._key]
+            return f"{self._prefix} {self._key}"
+
+    @property
+    def unique_id(self):
+        """
+        Return a unique, Home Assistant friendly identifier for this entity.
+        """
+        if self._port is not None:
+            return f"port{self._port}_{self._config.entry_id}"
+        if self._key is not None:
+            return f"{self._key}_{self._config.entry_id}"
+
 
     @property
     def device_class(self):
@@ -83,13 +94,16 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
     @property
     def is_on(self):
         """Return true if the binary_sensor is on."""
-        if self._data is None:
+        data = self.coordinator.data
+        if data is None:
             _LOGGER.warning("Data missing for: %s", self._attr_name)
             return False
         if self._port is not None:
-            return self._data["Link Status Raw"]
+            return data.get("stats")["stats"][self._port]["Link Status Raw"]
         if self._key is not None:
-            return self._data
+            if self._key == "dhcp":
+                return data.get("hostname")[self._key]
+            return data.get(self._key)[self._key]
         return False
 
     @property
@@ -108,6 +122,7 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
+        data = self.coordinator.data
         if self._port is not None:
-            return self._data
+            return data.get("stats")["stats"][self._port]
         return None
