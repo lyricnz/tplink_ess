@@ -9,7 +9,7 @@
     "@lyricnz",
     "@firstof9"
   ],
-  "requirements": ["tplink-ess-lib==0.4.1"],
+  "requirements": ["tplink-ess-lib==0.4.2"],
   "loggers": ["tplink-ess-lib"],
   "version": "0.0.0"
 }
