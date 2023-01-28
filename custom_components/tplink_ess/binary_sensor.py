@@ -6,12 +6,11 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.entity import EntityCategory
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .const import DOMAIN
-from .entity import TPLinkESSEntity
+from .const import BINARY_SENSORS, DOMAIN
+from .entity import TPLinkBinarySensorEntityDescription, TPLinkESSEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -22,15 +21,26 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
 
     binary_sensors = []
     limit = coordinator.data.get("num_ports")["num_ports"]
+    prefix = coordinator.data.get("hostname")["hostname"]
 
-    binary_sensors.extend(
-        TPLinkESSBinarySensor(i, None, coordinator, entry) for i in range(limit)
-    )
+    for i in range(limit):
+        binary_sensors.append(
+            TPLinkESSBinarySensor(
+                TPLinkBinarySensorEntityDescription(
+                    port=i,
+                    key=None,
+                    name=f"{prefix} Port {i+1}",
+                    device_class=BinarySensorDeviceClass.CONNECTIVITY,
+                ),
+                coordinator,
+                entry,
+            )
+        )
 
-    # one off binary sensors
-    binary_sensors.append(TPLinkESSBinarySensor(None, "qos1", coordinator, entry))
-    binary_sensors.append(TPLinkESSBinarySensor(None, "loop_prev", coordinator, entry))
-    binary_sensors.append(TPLinkESSBinarySensor(None, "dhcp", coordinator, entry))
+    for binary_sensor in BINARY_SENSORS:
+        binary_sensors.append(
+            TPLinkESSBinarySensor(BINARY_SENSORS[binary_sensor], coordinator, entry)
+        )
 
     async_add_entities(binary_sensors, False)
 
@@ -40,8 +50,7 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
 
     def __init__(
         self,
-        port: int | None,
-        key: str | None,
+        sensor_description: TPLinkBinarySensorEntityDescription,
         coordinator: DataUpdateCoordinator,
         config: ConfigEntry,
     ) -> None:
@@ -49,22 +58,10 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
         super().__init__(coordinator, config)
         self.coordinator = coordinator
         self._config = config
-        self._port = port
-        self._key = key
+        self._port = sensor_description.port
+        self._key = sensor_description.key
         self._prefix = coordinator.data.get("hostname")["hostname"]
-
-    @property
-    def name(self) -> str:
-        """Return the name of the sensor."""
-        if self._port is not None:
-            data = self.coordinator.data.get("stats")["stats"][self._port]
-            return f"{self._prefix} Port {data['Port']}"
-        if self._key is not None:
-            if self._key == "dhcp":
-                data = self.coordinator.data.get("hostname")[self._key]
-            else:
-                data = self.coordinator.data.get(self._key)[self._key]
-            return f"{self._prefix} {self._key}"
+        self._attr_name = sensor_description.name
 
     @property
     def unique_id(self):
@@ -75,21 +72,6 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
             return f"port{self._port}_{self._config.entry_id}"
         if self._key is not None:
             return f"{self._key}_{self._config.entry_id}"
-
-
-    @property
-    def device_class(self):
-        """Return the class of this binary_sensor."""
-        if self._port is not None:
-            return BinarySensorDeviceClass.CONNECTIVITY
-        return BinarySensorDeviceClass.RUNNING
-
-    @property
-    def entity_category(self):
-        """Return the category of this binary_sensor."""
-        if self._key is not None:
-            return EntityCategory.DIAGNOSTIC
-        return None
 
     @property
     def is_on(self):

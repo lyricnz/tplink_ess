@@ -1,7 +1,28 @@
 """Entity class"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from homeassistant.components.binary_sensor import BinarySensorEntityDescription
+from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, MANUFACTURER
+DOMAIN = "tplink_ess"
+MANUFACTURER = "TPLink"
+
+
+@dataclass
+class TPLinkSensorEntityDescription(SensorEntityDescription):
+    """Class describing TPLink ESS sensor entities."""
+
+    port: int | None = None
+
+
+@dataclass
+class TPLinkBinarySensorEntityDescription(BinarySensorEntityDescription):
+    """Class describing TPLinkESS binary sensor entities."""
+
+    port: int | None = None
 
 
 class TPLinkESSEntity(CoordinatorEntity):

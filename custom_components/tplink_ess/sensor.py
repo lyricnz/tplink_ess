@@ -5,8 +5,8 @@ from typing import Any
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import EntityCategory
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import DOMAIN, ICON
 from .entity import TPLinkESSEntity
@@ -61,7 +61,6 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         self._prefix = self.data.get("hostname")["hostname"]
         self._item_id = item_id
 
-
     @property
     def name(self) -> str:
         """Return the name of the sensor."""
@@ -76,7 +75,6 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
             name = data.get("stats")["stats"][self._item_id]["Port"]
             return f"{self._prefix} Port {name} {self._key}"
 
-
     @property
     def unique_id(self):
         """
@@ -85,10 +83,10 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         data = self.coordinator.data
         if self._key == "vlan":
             vlan_id_num = data.get("vlan")["vlan"][self._item_id]["VLAN ID"]
-            return f"vlan{vlan_id_num}_{self._config.entry_id}"  
+            return f"vlan{vlan_id_num}_{self._config.entry_id}"
         if self._key == "pvid":
             pvid = self._item_id + 1
-            return f"pvid{pvid}_{self._config.entry_id}"  
+            return f"pvid{pvid}_{self._config.entry_id}"
         if self._key in ("TxGoodPkt", "RxGoodPkt"):
             return f"port{self._item_id}_{self._key}_{self._config.entry_id}"
 
