@@ -42,7 +42,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     client = TPLinkESSClient(username, password, switch_mac)
 
-    coordinator = TPLinkESSDataUpdateCoordinator(hass, client=client, name=switch_mac, interval=interval)
+    coordinator = TPLinkESSDataUpdateCoordinator(
+        hass, client=client, name=switch_mac, interval=interval
+    )
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -83,6 +85,7 @@ class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug("Error while refreshing switch data: %s", exception)
             raise UpdateFailed() from exception
         return value
+
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""

@@ -1,4 +1,5 @@
 """Constants for tplink_ess."""
+
 # Base component constants
 NAME = "TPLink ESS"
 DOMAIN = "tplink_ess"
@@ -6,22 +7,13 @@ DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.0.0"
 ISSUE_URL = "https://github.com/lyricnz/tplink_ess/issues"
 MANUFACTURER = "TPLink"
-
-# Icons
 ICON = "mdi:format-quote-close"
 
-# Device classes
-BINARY_SENSOR_DEVICE_CLASS = "connectivity"
-
 # Platforms
-BINARY_SENSOR = "binary_sensor"
-SENSOR = "sensor"
-SWITCH = "switch"
-PLATFORMS = [BINARY_SENSOR, SENSOR]
+PLATFORMS = ["binary_sensor", "sensor"]
 
 # Defaults
 DEFAULT_NAME = DOMAIN
-
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------
