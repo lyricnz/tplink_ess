@@ -1,5 +1,1 @@
-"""Constants for integration_blueprint tests."""
-from custom_components.tplink_ess.const import CONF_PASSWORD, CONF_USERNAME
-
-# Mock config data to be used across multiple tests
-MOCK_CONFIG = {CONF_USERNAME: "test_username", CONF_PASSWORD: "test_password"}
+"""Constants for tplink_ess tests."""
