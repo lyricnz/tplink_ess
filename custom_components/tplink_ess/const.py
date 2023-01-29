@@ -1,10 +1,4 @@
 """Constants for tplink_ess."""
-from typing import Final
-
-from homeassistant.components.binary_sensor import BinarySensorDeviceClass
-from homeassistant.helpers.entity import EntityCategory
-
-from .entity import TPLinkBinarySensorEntityDescription
 
 # Base component constants
 NAME = "TPLink ESS"
@@ -30,24 +24,3 @@ If you have any issues with this you need to open an issue here:
 {ISSUE_URL}
 -------------------------------------------------------------------
 """
-
-BINARY_SENSORS: Final[dict[str, TPLinkBinarySensorEntityDescription]] = {
-    "qos": TPLinkBinarySensorEntityDescription(
-        name="QoS",
-        key="qos1",
-        device_class=BinarySensorDeviceClass.RUNNING,
-        entity_category=EntityCategory.DIAGNOSTIC,
-    ),
-    "loop_prevention": TPLinkBinarySensorEntityDescription(
-        name="Loop Prevention",
-        key="loop_prev",
-        device_class=BinarySensorDeviceClass.RUNNING,
-        entity_category=EntityCategory.DIAGNOSTIC,
-    ),
-    "dhcp": TPLinkBinarySensorEntityDescription(
-        name="DHCP",
-        key="dhcp",
-        device_class=BinarySensorDeviceClass.RUNNING,
-        entity_category=EntityCategory.DIAGNOSTIC,
-    ),
-}

@@ -13,7 +13,7 @@ MANUFACTURER = "TPLink"
 
 @dataclass
 class TPLinkSensorEntityDescription(SensorEntityDescription):
-    """Class describing TPLink ESS sensor entities."""
+    """Class describing TPLinkESS sensor entities."""
 
     port: int | None = None
 

@@ -6,13 +6,35 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .const import BINARY_SENSORS, DOMAIN
+from .const import DOMAIN
 from .entity import TPLinkBinarySensorEntityDescription, TPLinkESSEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
+BINARY_SENSORS_TYPES: tuple[TPLinkBinarySensorEntityDescription, ...] = (
+    TPLinkBinarySensorEntityDescription(
+        name="QoS",
+        key="qos1",
+        device_class=BinarySensorDeviceClass.RUNNING,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    TPLinkBinarySensorEntityDescription(
+        name="Loop Prevention",
+        key="loop_prev",
+        device_class=BinarySensorDeviceClass.RUNNING,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    TPLinkBinarySensorEntityDescription(
+        name="DHCP",
+        key="dhcp",
+        device_class=BinarySensorDeviceClass.RUNNING,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+)
 
 
 async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback):
@@ -37,9 +59,9 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
             )
         )
 
-    for binary_sensor in BINARY_SENSORS:
+    for binary_sensor in BINARY_SENSORS_TYPES:
         binary_sensors.append(
-            TPLinkESSBinarySensor(BINARY_SENSORS[binary_sensor], coordinator, entry)
+            TPLinkESSBinarySensor(binary_sensor, coordinator, entry)
         )
 
     async_add_entities(binary_sensors, False)
@@ -56,6 +78,7 @@ class TPLinkESSBinarySensor(TPLinkESSEntity, BinarySensorEntity):
     ) -> None:
         """Initialize."""
         super().__init__(coordinator, config)
+        self.entity_description = sensor_description
         self.coordinator = coordinator
         self._config = config
         self._port = sensor_description.port
