@@ -60,9 +60,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
         )
 
     for binary_sensor in BINARY_SENSORS_TYPES:
-        binary_sensors.append(
-            TPLinkESSBinarySensor(binary_sensor, coordinator, entry)
-        )
+        binary_sensors.append(TPLinkESSBinarySensor(binary_sensor, coordinator, entry))
 
     async_add_entities(binary_sensors, False)
 

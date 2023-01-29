@@ -37,7 +37,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                     ),
                     coordinator,
                     entry,
-                ), 
+                ),
             )
 
     pvids = coordinator.data.get("pvid")["pvid"]
@@ -49,8 +49,8 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                     name=f"{prefix} PVID: {i}",
                     key="pvid",
                     entity_category=EntityCategory.CONFIG,
-                    entity_registry_enabled_default=False,       
-                    icon="mdi:table-network",             
+                    entity_registry_enabled_default=False,
+                    icon="mdi:table-network",
                 ),
                 coordinator,
                 entry,
@@ -86,7 +86,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                 coordinator,
                 entry,
             ),
-        )        
+        )
     async_add_entities(sensors, False)
 
 
@@ -110,7 +110,6 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         self._attr_name = sensor_description.name
         self._attr_unique_id = f"{sensor_description.name}_{config.entry_id}"
 
-
     @property
     def native_unit_of_measurement(self) -> Any:
         """Return the unit of measurement."""
@@ -129,7 +128,6 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         if self._key in ("TxGoodPkt", "RxGoodPkt"):
             return int(data.get("stats")["stats"][self._item_id][self._key])
         return None
-
 
     @property
     def extra_state_attributes(self):
