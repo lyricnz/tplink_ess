@@ -20,28 +20,6 @@ TEST_LOGIN = {
     "password": "admin",
 }
 
-
-@pytest.fixture(autouse=True, name="mock_setup_entry")
-async def fixture_mock_setup():
-    """Make sure we never actually run setup."""
-    with patch(
-        "custom_components.tplink_ess.async_setup_entry", return_value=True
-    ) as mock_setup_entry:
-        yield
-
-
-@pytest.fixture()
-async def mock_test_creds():
-    """Mock TPLinkESSClient for _test_credentials function."""
-    with patch(
-        "custom_components.tplink_ess.api.TPLinkESSClient",
-    ) as mock_test_creds:
-        # mock_lib = mock.Mock(spec=tplink_ess_lib)
-        # mock_test_creds.return_value = mock_lib
-        mock_test_creds.async_get_data.return_value = True
-        yield mock_test_creds
-
-
 async def _get_connection_form(
     hass: HomeAssistant, connection_type: str
 ) -> FlowResultType:
@@ -60,7 +38,7 @@ async def _get_connection_form(
     return result
 
 
-async def test_manual(hass, mock_setup_entry, mock_test_creds):
+async def test_manual(hass, mock_switch):
     """Test manual user entry."""
     result = await _get_connection_form(hass, "manual")
 
@@ -70,19 +48,23 @@ async def test_manual(hass, mock_setup_entry, mock_test_creds):
     assert result2["type"] == "form"
     assert result2["step_id"] == "creds"
 
-    result3 = await hass.config_entries.flow.async_configure(
-        result["flow_id"], TEST_LOGIN
-    )
+    with patch(
+        "custom_components.tplink_ess.config_flow.TPLinkESSFlowHandler._test_credentials", return_value=True
+    ), patch(
+        "custom_components.tplink_ess.async_setup_entry", return_value=True
+    ) as mock_setup_entry:
 
-    assert result3["errors"] == {}
+        result3 = await hass.config_entries.flow.async_configure(
+            result["flow_id"], TEST_LOGIN
+        )
 
-    assert result3["type"] == "create_entry"
-    assert result3["title"] == "70:4f:57:89:61:6a"
-    assert result3["data"] == ""
+        assert result3["type"] == "create_entry"
+        assert result3["title"] == "70:4f:57:89:61:6a"
+        assert result3["data"] == {'mac': '70:4f:57:89:61:6a', 'password': 'admin', 'username': 'admin'}
 
-    await hass.async_block_till_done()
+        await hass.async_block_till_done()
 
-    assert len(mock_setup_entry.mock_calls) == 1
+        assert len(mock_setup_entry.mock_calls) == 1
 
 async def test_manual_login_fail(hass):
     """Test manual user entry."""
