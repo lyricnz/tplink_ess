@@ -1,5 +1,4 @@
 """Constants for tplink_ess."""
-
 # Base component constants
 NAME = "TPLink ESS"
 DOMAIN = "tplink_ess"
