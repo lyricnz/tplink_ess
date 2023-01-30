@@ -31,17 +31,6 @@ TEST_DISCOVERY_RESULTS = [
         "ip_mask": "255.255.255.0",
         "gateway": "192.168.1.4",
     },
-    {
-        "dhcp": True,
-        "firmware": "1.0.0 Build 20171214 Rel.70905",
-        "gateway": "192.168.30.212",
-        "hardware": "TL-SG108E 3.0",
-        "hostname": "TL-SG108E",
-        "ip_addr": "192.168.30.111",
-        "ip_mask": "255.255.255.0",
-        "mac": "b0:4e:26:45:ee:d8",
-        "type": "TL-SG108E",
-    }
 ]
 
 
