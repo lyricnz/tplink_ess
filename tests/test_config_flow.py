@@ -31,6 +31,17 @@ TEST_DISCOVERY_RESULTS = [
         "ip_mask": "255.255.255.0",
         "gateway": "192.168.1.4",
     },
+    {
+        "dhcp": True,
+        "firmware": "1.0.0 Build 20171214 Rel.70905",
+        "gateway": "192.168.30.212",
+        "hardware": "TL-SG108E 3.0",
+        "hostname": "TL-SG108E",
+        "ip_addr": "192.168.30.111",
+        "ip_mask": "255.255.255.0",
+        "mac": "b0:4e:26:45:ee:d8",
+        "type": "TL-SG108E",
+    }
 ]
 
 
@@ -55,7 +66,7 @@ async def _get_connection_form(
 async def test_discover(hass, mock_switch):
     """Test manual user entry."""
     with patch(
-        "custom_components.tplink_ess.config_flow.TPLinkESSClient.async_discover_swithces",
+        "custom_components.tplink_ess.config_flow.TPLinkESSClient.async_discover_switches",
         return_value=TEST_DISCOVERY_RESULTS,
     ):
         result = await _get_connection_form(hass, "discover")

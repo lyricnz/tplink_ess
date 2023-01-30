@@ -27,7 +27,7 @@ class TPLinkESSClient:
         api = TpLinkESS(self._host_mac, self._username, self._password)
         return await api.update_data(switch_mac=self._switch_mac)
 
-    async def async_discover_swithces(self) -> list:
+    async def async_discover_switches(self) -> list:
         """Discover switches and return results."""
         api = TpLinkESS(self._host_mac)
-        return await api.discovery()
+        return sorted(await api.discovery(), key=lambda k: k["ip_addr"])
