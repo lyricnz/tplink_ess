@@ -2,13 +2,13 @@
 import logging
 from typing import Any
 
-from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .const import DOMAIN, ICON
+from .const import DOMAIN
 from .entity import TPLinkESSEntity, TPLinkSensorEntityDescription
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)

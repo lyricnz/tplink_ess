@@ -5,9 +5,9 @@ For more details about this integration, please refer to
 https://github.com/lyricnz/tplink_ess
 """
 import asyncio
-from datetime import timedelta
 import logging
 import random
+from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_MAC, CONF_PASSWORD, CONF_USERNAME
