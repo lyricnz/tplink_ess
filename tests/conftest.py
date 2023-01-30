@@ -1,4 +1,4 @@
-"""Global fixtures for integration_blueprint integration."""
+"""Global fixtures for tplink_ess integration."""
 
 from unittest.mock import patch
 
