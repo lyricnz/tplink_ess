@@ -34,7 +34,6 @@ TEST_DISCOVERY_RESULTS = [
 ]
 
 
-
 async def _get_connection_form(
     hass: HomeAssistant, connection_type: str
 ) -> FlowResultType:
@@ -56,7 +55,8 @@ async def _get_connection_form(
 async def test_discover(hass, mock_switch):
     """Test manual user entry."""
     with patch(
-        "custom_components.tplink_ess.config_flow.TPLinkESSClient.async_discover_swithces", return_value=TEST_DISCOVERY_RESULTS
+        "custom_components.tplink_ess.config_flow.TPLinkESSClient.async_discover_swithces",
+        return_value=TEST_DISCOVERY_RESULTS,
     ):
         result = await _get_connection_form(hass, "discover")
 
