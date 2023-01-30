@@ -53,4 +53,4 @@ Platform | Description
 [maintenance-shield]: https://img.shields.io/badge/maintainer-Joakim%20Sørensen%20%40ludeeus-blue.svg?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/release/lyricnz/tplink_ess.svg?style=for-the-badge
 [releases]: https://github.com/lyricnz/tplink_ess/releases
-[user_profile]: https://github.com/ludeeus
+[user_profile]: https://github.com/lyricnz
