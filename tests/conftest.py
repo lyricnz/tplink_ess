@@ -36,4 +36,3 @@ def mock_switch():
     ) as mock_value:
         mock_value.return_value = SWITCH_DATA
         yield mock_value
-
