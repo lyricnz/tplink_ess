@@ -57,7 +57,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
             ),
         )
 
-    # Port packet counters
+    # Per Port sensors
     limit = coordinator.data.get("num_ports")["num_ports"]
     for i in range(limit):
         name = coordinator.data.get("stats")["stats"][i]["Port"]
@@ -81,6 +81,19 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                     name=f"{prefix} Port {name} RxGoodPkt",
                     key="RxGoodPkt",
                     icon="mdi:download-network",
+                    entity_registry_enabled_default=False,
+                ),
+                coordinator,
+                entry,
+            ),
+        ),
+        sensors.append(
+            TPLinkESSSensor(
+                TPLinkSensorEntityDescription(
+                    port=i,
+                    name=f"{prefix} Port {name} Link Status",
+                    key="Link Status",
+                    icon="mdi:ethernet-cable",
                     entity_registry_enabled_default=False,
                 ),
                 coordinator,
