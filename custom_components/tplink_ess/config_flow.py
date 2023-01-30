@@ -45,7 +45,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def _show_config_discovery(self, user_input):
         """Show the configuration form."""
         api = TPLinkESSClient()
-        switches = await api.async_discover_swithces()
+        switches = await api.async_discover_switches()
 
         _LOGGER.debug("Discover results: %s", switches)
 
