@@ -19,7 +19,7 @@ system information, port status and statistics, VLAN configuration, etc.
 
 Platform | Description
 -- | --
-`binary_sensor` | Show something `True` or `False`.
+`binary_sensor` | Show port connected/disconnected status.
 `sensor` | Show info from your TPLink Easy Smart Switch.
 
 ![example][exampleimg]
