@@ -1,10 +1,5 @@
 {
-    "name": "Integration blueprint",
-    "hacs": "1.6.0",
-    "domains": [
-        "binary_sensor",
-        "sensor",
-        "switch"
-    ],
-    "homeassistant": "0.118.0"
+    "name": "TPLink Easy Smart Switch",
+    "homeassistant": "2023.1.0",
+    "render_readme": true
 }

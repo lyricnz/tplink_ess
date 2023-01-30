@@ -1,0 +1,15 @@
+{
+  "domain": "tplink_ess",
+  "name": "TPLink ESS",
+  "documentation": "https://github.com/lyricnz/tplink_ess",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/lyricnz/tplink_ess/issues",
+  "config_flow": true,
+  "codeowners": [
+    "@lyricnz",
+    "@firstof9"
+  ],
+  "requirements": ["tplink-ess-lib==0.4.2"],
+  "loggers": ["tplink-ess-lib"],
+  "version": "0.0.0"
+}

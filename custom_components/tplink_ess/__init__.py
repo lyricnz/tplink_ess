@@ -1,35 +1,29 @@
 """
-Custom integration to integrate integration_blueprint with Home Assistant.
+Custom integration to integrate TPLink Easy Smart Switches with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/custom-components/integration_blueprint
+https://github.com/lyricnz/tplink_ess
 """
 import asyncio
 from datetime import timedelta
 import logging
+import random
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_MAC, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import IntegrationBlueprintApiClient
-
-from .const import (
-    CONF_PASSWORD,
-    CONF_USERNAME,
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
-
-SCAN_INTERVAL = timedelta(seconds=30)
+from .api import TPLinkESSClient
+from .const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-async def async_setup(hass: HomeAssistant, config: Config):
+async def async_setup(
+    hass: HomeAssistant, config: Config
+):  # pylint: disable=unused-argument
     """Set up this integration using YAML is not supported."""
     return True
 
@@ -42,47 +36,55 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
+    switch_mac = entry.data.get(CONF_MAC)
 
-    session = async_get_clientsession(hass)
-    client = IntegrationBlueprintApiClient(username, password, session)
+    interval = timedelta(seconds=random.randint(10, 30))
 
-    coordinator = BlueprintDataUpdateCoordinator(hass, client=client)
+    client = TPLinkESSClient(username, password, switch_mac)
+
+    coordinator = TPLinkESSDataUpdateCoordinator(
+        hass, client=client, name=switch_mac, interval=interval
+    )
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
-
     for platform in PLATFORMS:
-        if entry.options.get(platform, True):
-            coordinator.platforms.append(platform)
-            hass.async_add_job(
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-            )
+        hass.async_create_task(
+            hass.config_entries.async_forward_entry_setup(entry, platform)
+        )
 
-    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
     return True
 
 
-class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
+class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
     def __init__(
-        self, hass: HomeAssistant, client: IntegrationBlueprintApiClient
+        self,
+        hass: HomeAssistant,
+        client: TPLinkESSClient,
+        name: str,
+        interval: int,
     ) -> None:
         """Initialize."""
         self.api = client
+        self._interval = interval
         self.platforms = []
 
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
+        super().__init__(hass, _LOGGER, name=name, update_interval=interval)
 
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            return await self.api.async_get_data()
+            value = await self.api.async_get_data()
+            _LOGGER.debug("TPLink switch data: %s", value)
         except Exception as exception:
+            _LOGGER.debug("Error while refreshing switch data: %s", exception)
             raise UpdateFailed() from exception
+        return value
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -93,7 +95,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             *[
                 hass.config_entries.async_forward_entry_unload(entry, platform)
                 for platform in PLATFORMS
-                if platform in coordinator.platforms
             ]
         )
     )
@@ -101,9 +102,3 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unloaded
-
-
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Reload config entry."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
