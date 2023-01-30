@@ -78,7 +78,7 @@ async def test_discover(hass, mock_switch):
             )
 
             assert result3["type"] == "create_entry"
-            assert result3["title"] == "70:4f:57:89:61:6a"
+            assert result3["title"] == "switch7"
             assert result3["data"] == {
                 "mac": "70:4f:57:89:61:6a",
                 "password": "admin",
