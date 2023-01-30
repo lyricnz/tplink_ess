@@ -51,7 +51,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                 TPLinkBinarySensorEntityDescription(
                     port=i,
                     key=None,
-                    name=f"{prefix} Port {i+1}",
+                    name=f"{prefix} Port {i + 1}",
                     device_class=BinarySensorDeviceClass.CONNECTIVITY,
                 ),
                 coordinator,

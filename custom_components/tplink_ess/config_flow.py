@@ -1,11 +1,11 @@
 """Adds config flow for tplink_ess."""
 import logging
 
+import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_MAC, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.helpers.device_registry import format_mac
-import voluptuous as vol
 
 from .api import TPLinkESSClient
 from .const import DOMAIN, PLATFORMS
