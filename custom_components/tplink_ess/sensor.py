@@ -104,7 +104,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
 
 
 class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
-    """integration_blueprint Sensor class."""
+    """tplink_ess Sensor class."""
 
     def __init__(
         self,

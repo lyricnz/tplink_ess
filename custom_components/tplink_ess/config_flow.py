@@ -14,7 +14,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
-    """Config flow for Blueprint."""
+    """Config flow for TP-Link ESS."""
 
     VERSION = 1
 
@@ -188,7 +188,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class TPLinkESSOptionsFlowHandler(config_entries.OptionsFlow):
-    """Blueprint config flow options handler."""
+    """TP-Link ESS config flow options handler."""
 
     def __init__(self, config_entry):
         """Initialize HACS options flow."""

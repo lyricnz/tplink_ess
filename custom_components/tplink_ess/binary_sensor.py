@@ -1,4 +1,4 @@
-"""Binary sensor platform for integration_blueprint."""
+"""Binary sensor platform for tplink_ess."""
 import logging
 
 from homeassistant.components.binary_sensor import (
