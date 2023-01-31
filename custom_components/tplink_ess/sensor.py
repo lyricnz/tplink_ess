@@ -138,10 +138,10 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
             return data.get("vlan")["vlan"][self._item_id]["VLAN ID"]
         if self._key == "pvid":
             return data.get("pvid")["pvid"][self._item_id][1]
-        if self._key in data.get("stats")["stats"][self._item_id]:
+        if value := data.get("stats")["stats"][self._item_id].get(self._key) is not None:
             if self._key in ("TxGoodPkt", "RxGoodPkt"):
-                return int(data.get("stats")["stats"][self._item_id][self._key])
-            return data.get("stats")["stats"][self._item_id][self._key]
+                return int(value)
+            return value
         return None
 
     @property
