@@ -1,5 +1,5 @@
 """Test tplink_ess config flow."""
-
+import itertools
 from unittest.mock import patch
 
 import pytest
@@ -161,13 +161,13 @@ async def test_manual_login_fail(hass):
 
 
 async def test_discovery_results(hass, mock_switch):
-    """Test that the list of switches is sorted."""
-    with patch(
-        "tplink_ess_lib.TpLinkESS.discovery",
-        return_value=TEST_DISCOVERY_RESULTS,
-    ):
-        api = TPLinkESSClient()
-        switches = await api.async_discover_switches()
-        assert len(switches) == 3
-        names = [switch["hostname"] for switch in switches]
-        assert names == sorted(names)
+    """Test that the list of switches is returned in the same order however the results arrive."""
+    found_switches = None
+    for results in itertools.permutations(TEST_DISCOVERY_RESULTS):
+        with patch("tplink_ess_lib.TpLinkESS.discovery", return_value=results):
+            api = TPLinkESSClient()
+            switches = await api.async_discover_switches()
+            assert len(switches) == len(TEST_DISCOVERY_RESULTS)
+            if found_switches is None:
+                found_switches = switches
+            assert switches == found_switches
