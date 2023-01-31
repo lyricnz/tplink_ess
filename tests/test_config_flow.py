@@ -1,16 +1,14 @@
 """Test tplink_ess config flow."""
-
-from unittest import mock
+import itertools
 from unittest.mock import patch
-import tplink_ess_lib
-import pytest
 
+import pytest
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
-from custom_components.tplink_ess.const import DOMAIN
 
-from tests.const import CONFIG_DATA
+from custom_components.tplink_ess import TPLinkESSClient
+from custom_components.tplink_ess.const import DOMAIN
 
 pytestmark = pytest.mark.asyncio
 
@@ -30,6 +28,30 @@ TEST_DISCOVERY_RESULTS = [
         "ip_addr": "192.168.1.109",
         "ip_mask": "255.255.255.0",
         "gateway": "192.168.1.4",
+    },
+    {
+        "auto_save": True,
+        "dhcp": True,
+        "firmware": "1.0.0 Build 20220706 Rel.55606",
+        "gateway": "192.168.30.212",
+        "hardware": "TL-SG105PE 2.0",
+        "hostname": "Back-TL-SG105PE",
+        "ip_addr": "192.168.30.50",
+        "ip_mask": "255.255.255.0",
+        "is_factory": False,
+        "mac": "b4:b0:24:3a:f1:3b",
+        "type": "TL-SG105PE",
+    },
+    {
+        "dhcp": True,
+        "firmware": "1.0.0 Build 20171214 Rel.70905",
+        "gateway": "192.168.30.212",
+        "hardware": "TL-SG108E 3.0",
+        "hostname": "TL-SG108E",
+        "ip_addr": "192.168.30.111",
+        "ip_mask": "255.255.255.0",
+        "mac": "b0:4e:26:45:ee:d8",
+        "type": "TL-SG108E",
     },
 ]
 
@@ -72,7 +94,6 @@ async def test_discover(hass, mock_switch):
         ), patch(
             "custom_components.tplink_ess.async_setup_entry", return_value=True
         ) as mock_setup_entry:
-
             result3 = await hass.config_entries.flow.async_configure(
                 result["flow_id"], TEST_LOGIN
             )
@@ -105,7 +126,6 @@ async def test_manual(hass, mock_switch):
     ), patch(
         "custom_components.tplink_ess.async_setup_entry", return_value=True
     ) as mock_setup_entry:
-
         result3 = await hass.config_entries.flow.async_configure(
             result["flow_id"], TEST_LOGIN
         )
@@ -138,3 +158,16 @@ async def test_manual_login_fail(hass):
     )
 
     assert result3["errors"] == {"base": "auth"}
+
+
+async def test_discovery_results(hass, mock_switch):
+    """Test that the list of switches is returned in the same order however the results arrive."""
+    found_switches = None
+    for results in itertools.permutations(TEST_DISCOVERY_RESULTS):
+        with patch("tplink_ess_lib.TpLinkESS.discovery", return_value=results):
+            api = TPLinkESSClient()
+            switches = await api.async_discover_switches()
+            assert len(switches) == len(TEST_DISCOVERY_RESULTS)
+            if found_switches is None:
+                found_switches = switches
+            assert switches == found_switches

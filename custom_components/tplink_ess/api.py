@@ -30,4 +30,5 @@ class TPLinkESSClient:
     async def async_discover_switches(self) -> list:
         """Discover switches and return results."""
         api = TpLinkESS(self._host_mac)
-        return sorted(await api.discovery(), key=lambda k: k["ip_addr"])
+        switches = await api.discovery()
+        return sorted(switches, key=lambda k: k["hostname"] + k["mac"])
