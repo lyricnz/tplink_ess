@@ -4,7 +4,6 @@
 
 [![hacs][hacsbadge]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
-[![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
 [![Discord][discord-shield]][discord]
 [![Community Forum][forum-shield]][forum]
@@ -37,8 +36,6 @@ Platform | Description
 ***
 
 [tplink_ess]: https://github.com/lyricnz/tplink_ess
-[buymecoffee]: https://www.buymeacoffee.com/ludeeus
-[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
 [commits-shield]: https://img.shields.io/github/commit-activity/y/lyricnz/tplink_ess.svg?style=for-the-badge
 [commits]: https://github.com/lyricnz/tplink_ess/commits/master
 [hacs]: https://hacs.xyz
@@ -50,7 +47,7 @@ Platform | Description
 [forum]: https://community.home-assistant.io/
 [license]: https://github.com/lyricnz/tplink_ess/blob/main/LICENSE
 [license-shield]: https://img.shields.io/github/license/lyricnz/tplink_ess.svg?style=for-the-badge
-[maintenance-shield]: https://img.shields.io/badge/maintainer-Joakim%20Sørensen%20%40ludeeus-blue.svg?style=for-the-badge
+[maintenance-shield]: https://img.shields.io/badge/maintainer-Simon%20Roberts%20%40lyricnz-blue.svg?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/release/lyricnz/tplink_ess.svg?style=for-the-badge
 [releases]: https://github.com/lyricnz/tplink_ess/releases
 [user_profile]: https://github.com/lyricnz
