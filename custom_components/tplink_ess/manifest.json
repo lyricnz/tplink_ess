@@ -10,7 +10,7 @@
     "@firstof9"
   ],
   "requirements": [
-    "tplink-ess-lib==0.4.2"
+    "tplink-ess-lib==0.4.3"
   ],
   "loggers": [
     "tplink-ess-lib"
