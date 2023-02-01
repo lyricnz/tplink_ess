@@ -153,7 +153,7 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         self._attr_name = sensor_description.name
         self._attr_unique_id = f"{sensor_description.name}_{config.entry_id}"
         self._attr_unit_of_measurement = sensor_description.unit_of_measurement
-        self._last_reading = None
+        self._last_reading = 0.0
 
     @property
     def native_value(self):
@@ -168,13 +168,13 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         ) is not None:
             if self._key in ("TxGoodPkt", "RxGoodPkt"):
                 if self._attr_unit_of_measurement == "packets/s":
-                    if self._last_reading is None:
+                    if not self._last_reading:
                         self._last_reading = float(value)
                     else:
-                        self._last_reading = float(
+                        self._last_reading = round(float(
                             (value - self._last_reading)
                             / self.coordinator.update_interval.total_seconds()
-                        )
+                        ),2)
                     return float(self._last_reading)
                 return int(value)
             if self._last_reading != value:
