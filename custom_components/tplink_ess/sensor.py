@@ -68,6 +68,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                     name=f"{prefix} Port {name} TxGoodPkt",
                     key="TxGoodPkt",
                     icon="mdi:upload-network",
+                    native_unit_of_measurement="packets",
                     entity_registry_enabled_default=False,
                 ),
                 coordinator,
@@ -81,6 +82,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                     name=f"{prefix} Port {name} RxGoodPkt",
                     key="RxGoodPkt",
                     icon="mdi:download-network",
+                    native_unit_of_measurement="packets",
                     entity_registry_enabled_default=False,
                 ),
                 coordinator,
@@ -94,6 +96,34 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                     name=f"{prefix} Port {name} Link Status",
                     key="Link Status",
                     icon="mdi:ethernet-cable",
+                    entity_registry_enabled_default=False,
+                ),
+                coordinator,
+                entry,
+            ),
+        ),
+        sensors.append(
+            TPLinkESSSensor(
+                TPLinkSensorEntityDescription(
+                    port=i,
+                    name=f"{prefix} Port {name} PPS RX",
+                    key="RxGoodPkt",
+                    icon="mdi:lan-pending",
+                    native_unit_of_measurement="packets/s",
+                    entity_registry_enabled_default=False,
+                ),
+                coordinator,
+                entry,
+            ),
+        ),
+        sensors.append(
+            TPLinkESSSensor(
+                TPLinkSensorEntityDescription(
+                    port=i,
+                    name=f"{prefix} Port {name} PPS TX",
+                    key="TxGoodPkt",
+                    icon="mdi:lan-pending",
+                    native_unit_of_measurement="packets/s",
                     entity_registry_enabled_default=False,
                 ),
                 coordinator,
@@ -122,14 +152,8 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         self._key = sensor_description.key
         self._attr_name = sensor_description.name
         self._attr_unique_id = f"{sensor_description.name}_{config.entry_id}"
-        self._last_reading = None
-
-    @property
-    def native_unit_of_measurement(self) -> Any:
-        """Return the unit of measurement."""
-        if self._key in ("TxGoodPkt", "RxGoodPkt"):
-            return "packets"
-        return None
+        self._attr_native_unit_of_measurement = sensor_description.native_unit_of_measurement
+        self._last_reading = 0.0
 
     @property
     def native_value(self):
@@ -139,8 +163,20 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
             return data.get("vlan")["vlan"][self._item_id]["VLAN ID"]
         if self._key == "pvid":
             return data.get("pvid")["pvid"][self._item_id][1]
-        if (value := data.get("stats")["stats"][self._item_id].get(self._key)) is not None:
+        if (
+            value := data.get("stats")["stats"][self._item_id].get(self._key)
+        ) is not None:
             if self._key in ("TxGoodPkt", "RxGoodPkt"):
+                if self._attr_native_unit_of_measurement == "packets/s":
+                    rate = 0.0
+                    if self._last_reading:
+                        rate = round(float(
+                            (value - self._last_reading)
+                            / self.coordinator.update_interval.total_seconds()
+                        ),2)                        
+                        self._last_reading = float(value)
+                    self._last_reading = int(value)
+                    return float(rate)
                 return int(value)
             if self._last_reading != value:
                 self._last_reading = value
