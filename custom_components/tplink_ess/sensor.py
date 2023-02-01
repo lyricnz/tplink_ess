@@ -68,7 +68,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                     name=f"{prefix} Port {name} TxGoodPkt",
                     key="TxGoodPkt",
                     icon="mdi:upload-network",
-                    unit_of_measurement="packets",
+                    native_unit_of_measurement="packets",
                     entity_registry_enabled_default=False,
                 ),
                 coordinator,
@@ -82,7 +82,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                     name=f"{prefix} Port {name} RxGoodPkt",
                     key="RxGoodPkt",
                     icon="mdi:download-network",
-                    unit_of_measurement="packets",
+                    native_unit_of_measurement="packets",
                     entity_registry_enabled_default=False,
                 ),
                 coordinator,
@@ -109,7 +109,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                     name=f"{prefix} Port {name} PPS RX",
                     key="RxGoodPkt",
                     icon="mdi:lan-pending",
-                    unit_of_measurement="packets/s",
+                    native_unit_of_measurement="packets/s",
                     entity_registry_enabled_default=False,
                 ),
                 coordinator,
@@ -123,7 +123,7 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
                     name=f"{prefix} Port {name} PPS TX",
                     key="TxGoodPkt",
                     icon="mdi:lan-pending",
-                    unit_of_measurement="packets/s",
+                    native_unit_of_measurement="packets/s",
                     entity_registry_enabled_default=False,
                 ),
                 coordinator,
@@ -152,7 +152,6 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         self._key = sensor_description.key
         self._attr_name = sensor_description.name
         self._attr_unique_id = f"{sensor_description.name}_{config.entry_id}"
-        self._attr_unit_of_measurement = sensor_description.unit_of_measurement
         self._last_reading = 0.0
 
     @property
