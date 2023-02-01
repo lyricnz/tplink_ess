@@ -169,11 +169,12 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
             if self._key in ("TxGoodPkt", "RxGoodPkt"):
                 if self._attr_unit_of_measurement == "packets/s":
                     if self._last_reading is None:
-                        self._last_reading = value
+                        self._last_reading = float(value)
                     else:
-                        self._last_reading = (
-                            value - self._last_reading
-                        ) / self.coordinator.update_interval
+                        self._last_reading = float(
+                            (value - self._last_reading)
+                            / self.coordinator.update_interval.total_seconds()
+                        )
                     return float(self._last_reading)
                 return int(value)
             if self._last_reading != value:
