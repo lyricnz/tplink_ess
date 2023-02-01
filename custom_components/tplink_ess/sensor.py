@@ -174,7 +174,7 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
                         self._last_reading = (
                             value - self._last_reading
                         ) / self.coordinator.update_interval
-                    return self._last_reading
+                    return float(self._last_reading)
                 return int(value)
             if self._last_reading != value:
                 self._last_reading = value
