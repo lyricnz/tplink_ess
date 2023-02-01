@@ -122,6 +122,7 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         self._key = sensor_description.key
         self._attr_name = sensor_description.name
         self._attr_unique_id = f"{sensor_description.name}_{config.entry_id}"
+        self._last_reading = None
 
     @property
     def native_unit_of_measurement(self) -> Any:
@@ -141,8 +142,9 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         if (value := data.get("stats")["stats"][self._item_id].get(self._key)) is not None:
             if self._key in ("TxGoodPkt", "RxGoodPkt"):
                 return int(value)
-            return value
-        return None
+            if self._last_reading != value:
+                self._last_reading = value
+        return self._last_reading
 
     @property
     def extra_state_attributes(self):
