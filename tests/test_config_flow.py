@@ -89,7 +89,7 @@ async def test_discover(hass, mock_switch):
         assert result2["step_id"] == "creds"
 
         with patch(
-            "custom_components.tplink_ess.config_flow.TPLinkESSFlowHandler._test_credentials",
+            "custom_components.tplink_ess.config_flow.TPLinkESSFlowHandler._validate_credentials",
             return_value=True,
         ), patch(
             "custom_components.tplink_ess.async_setup_entry", return_value=True
@@ -121,7 +121,7 @@ async def test_manual(hass, mock_switch):
     assert result2["step_id"] == "creds"
 
     with patch(
-        "custom_components.tplink_ess.config_flow.TPLinkESSFlowHandler._test_credentials",
+        "custom_components.tplink_ess.config_flow.TPLinkESSFlowHandler._validate_credentials",
         return_value=True,
     ), patch(
         "custom_components.tplink_ess.async_setup_entry", return_value=True
