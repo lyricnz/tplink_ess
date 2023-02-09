@@ -1,25 +1,19 @@
 """Test tplink_ess setup process."""
 
 import pytest
-
-from unittest.mock import patch
-
-from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR_DOMAIN
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.tplink_ess.const import (
     DOMAIN,
-    PLATFORMS,
 )
-
 from .const import CONFIG_DATA, SWITCH_NAME
 
 pytestmark = pytest.mark.asyncio
 
 
 async def test_setup_entry(hass, mock_switch):
-    """Test settting up entities."""
+    """Test setting up entities."""
     entry = MockConfigEntry(
         domain=DOMAIN,
         title=SWITCH_NAME,

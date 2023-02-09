@@ -1,6 +1,5 @@
 """Sensor platform for tplink_ess."""
 import logging
-from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -152,7 +151,9 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
         self._key = sensor_description.key
         self._attr_name = sensor_description.name
         self._attr_unique_id = f"{sensor_description.name}_{config.entry_id}"
-        self._attr_native_unit_of_measurement = sensor_description.native_unit_of_measurement
+        self._attr_native_unit_of_measurement = (
+            sensor_description.native_unit_of_measurement
+        )
         self._last_reading = 0.0
 
     @property
@@ -170,10 +171,13 @@ class TPLinkESSSensor(TPLinkESSEntity, SensorEntity):
                 if self._attr_native_unit_of_measurement == "packets/s":
                     rate = 0.0
                     if self._last_reading:
-                        rate = round(float(
-                            (value - self._last_reading)
-                            / self.coordinator.update_interval.total_seconds()
-                        ),2)                        
+                        rate = round(
+                            float(
+                                (value - self._last_reading)
+                                / self.coordinator.update_interval.total_seconds()
+                            ),
+                            2,
+                        )
                         self._last_reading = float(value)
                     self._last_reading = int(value)
                     return float(rate)

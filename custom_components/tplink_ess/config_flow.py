@@ -124,7 +124,7 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_creds(self, user_input=None):
         """Handle credential inputs from user."""
         if user_input is not None:
-            valid = await self._test_credentials(
+            valid = await self._validate_credentials(
                 user_input[CONF_USERNAME],
                 user_input[CONF_PASSWORD],
                 self._data[CONF_MAC],
@@ -139,10 +139,8 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             self._errors["base"] = "auth"
             return await self._show_config_form(user_input)
 
-        user_input = {}
         # Provide defaults for form
-        user_input[CONF_USERNAME] = ""
-        user_input[CONF_PASSWORD] = ""
+        user_input = {CONF_USERNAME: "", CONF_PASSWORD: ""}
 
         return await self._show_config_form(user_input)
 
@@ -176,7 +174,8 @@ class TPLinkESSFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password, mac_addr):
+    @staticmethod
+    async def _validate_credentials(username, password, mac_addr):
         """Return true if credentials is valid."""
         try:
             client = TPLinkESSClient(username, password, mac_addr)

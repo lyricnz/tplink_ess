@@ -43,7 +43,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     client = TPLinkESSClient(username, password, switch_mac)
 
     coordinator = TPLinkESSDataUpdateCoordinator(
-        hass, client=client, name=switch_mac, interval=interval
+        hass, client=client, name=switch_mac, update_interval=interval
     )
     await coordinator.async_refresh()
 
@@ -67,14 +67,13 @@ class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
         hass: HomeAssistant,
         client: TPLinkESSClient,
         name: str,
-        interval: int,
+        update_interval: timedelta | None = None,
     ) -> None:
         """Initialize."""
         self.api = client
-        self._interval = interval
         self.platforms = []
 
-        super().__init__(hass, _LOGGER, name=name, update_interval=interval)
+        super().__init__(hass, _LOGGER, name=name, update_interval=update_interval)
 
     async def _async_update_data(self):
         """Update data via library."""
@@ -89,7 +88,6 @@ class TPLinkESSDataUpdateCoordinator(DataUpdateCoordinator):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
     unloaded = all(
         await asyncio.gather(
             *[

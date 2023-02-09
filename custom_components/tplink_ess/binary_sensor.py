@@ -41,23 +41,22 @@ async def async_setup_entry(hass, entry, async_add_entities: AddEntitiesCallback
     """Setup binary_sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
-    binary_sensors = []
     limit = coordinator.data.get("num_ports")["num_ports"]
     prefix = coordinator.data.get("hostname")["hostname"]
 
-    for i in range(limit):
-        binary_sensors.append(
-            TPLinkESSBinarySensor(
-                TPLinkBinarySensorEntityDescription(
-                    port=i,
-                    key=None,
-                    name=f"{prefix} Port {i + 1}",
-                    device_class=BinarySensorDeviceClass.CONNECTIVITY,
-                ),
-                coordinator,
-                entry,
-            )
+    binary_sensors = [
+        TPLinkESSBinarySensor(
+            TPLinkBinarySensorEntityDescription(
+                port=i,
+                key=None,
+                name=f"{prefix} Port {i + 1}",
+                device_class=BinarySensorDeviceClass.CONNECTIVITY,
+            ),
+            coordinator,
+            entry,
         )
+        for i in range(limit)
+    ]
 
     for binary_sensor in BINARY_SENSORS_TYPES:
         binary_sensors.append(TPLinkESSBinarySensor(binary_sensor, coordinator, entry))
